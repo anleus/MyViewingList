@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">My Viewing List</string>
+
+    <string name="library_name">Biblioteca</string>
+
+    <string name="tab_watching">Viendo</string>
+    <string name="tab_waiting">Pendiente</string>
+    <string name="tab_completed">Done</string>
+    <string name="tab_dropped">Dropped</string>
+</resources>
