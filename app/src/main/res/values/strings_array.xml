@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>]
+    <string-array name="entry_type">
+        <item>@string/videogame_name</item>
+        <item>@string/anime_name</item>
+        <item>@string/manga_name</item>
+        <item>@string/film_name</item>
+        <item>@string/serie_name</item>
+        <item>@string/book_name</item>
+    </string-array>
+</resources>

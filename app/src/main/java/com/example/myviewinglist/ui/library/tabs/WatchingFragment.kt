@@ -1,4 +1,4 @@
-package com.example.myviewinglist.ui.library
+package com.example.myviewinglist.ui.library.tabs
 
 import android.os.Bundle
 import android.view.LayoutInflater

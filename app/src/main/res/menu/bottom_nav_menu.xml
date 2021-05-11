@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/libraryFragment"
+        android:icon="@drawable/ic_book_outline"
+        android:title="@string/library_name" />
+
+    <item
+        android:id="@+id/entryFormFragment"
+        android:icon="@drawable/ic_add_outline"
+        android:title="@string/add_name" />
+
+    <item
+        android:id="@+id/collectionsFragment"
+        android:icon="@drawable/ic_col_search"
+        android:title="@string/collection_name" />
+</menu>

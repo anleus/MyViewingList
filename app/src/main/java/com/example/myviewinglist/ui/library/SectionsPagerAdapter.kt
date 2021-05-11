@@ -1,20 +1,20 @@
-package com.example.myviewinglist.ui.main
+package com.example.myviewinglist.ui.library
 
 import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.example.myviewinglist.R
-import com.example.myviewinglist.ui.library.CompletedFragment
-import com.example.myviewinglist.ui.library.DroppedFragment
-import com.example.myviewinglist.ui.library.WaitingFragment
-import com.example.myviewinglist.ui.library.WatchingFragment
+import com.example.myviewinglist.ui.library.tabs.CompletedFragment
+import com.example.myviewinglist.ui.library.tabs.DroppedFragment
+import com.example.myviewinglist.ui.library.tabs.WaitingFragment
+import com.example.myviewinglist.ui.library.tabs.WatchingFragment
 
 private val TAB_TITLES = arrayOf(
-    R.string.tab_watching,
-    R.string.tab_waiting,
-    R.string.tab_completed,
-    R.string.tab_dropped
+    R.string.watching_name,
+    R.string.waiting_name,
+    R.string.completed_name,
+    R.string.dropped_name
 )
 
 /**
@@ -49,7 +49,7 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager)
     }
 
     override fun getCount(): Int {
-        // Show 2 total pages.
+        // Show 4 total pages.
         return 4
     }
 }

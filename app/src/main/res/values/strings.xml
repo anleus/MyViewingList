@@ -1,10 +1,37 @@
 <resources>
     <string name="app_name">My Viewing List</string>
 
-    <string name="library_name">Biblioteca</string>
+    <string name="action_search">Búsqueda</string>
+    <string name="action_statistics">Estadísticas</string>
 
-    <string name="tab_watching">Viendo</string>
-    <string name="tab_waiting">Pendiente</string>
-    <string name="tab_completed">Done</string>
-    <string name="tab_dropped">Dropped</string>
+    <string name="library_name">Biblioteca</string>
+    <string name="collection_name">Colecciones</string>
+    <string name="add_name">Añadir cosa</string>
+
+    <string name="watching_name">Viendo</string>
+    <string name="waiting_name">Pendiente</string>
+    <string name="completed_name">Done</string>
+    <string name="dropped_name">Dropped</string>
+
+    <string name="form_name">Nombre</string>
+    <string name="form_type">Tipo</string>
+    <string name="form_publication_text">Publicado el</string>
+    <string name="form_completed_text">Completado el</string>
+    <string name="form_edit_date">dd/mm/aaaa</string>
+    <string name="form_add_collection">Añadir colecciones</string>
+    <string name="form_annotation">Anotaciones</string>
+    <string name="form_add">Crear entrada</string>
+    <string name="form_completed">Entrada añadida</string>
+
+    <string name="name_error">Introduzca un nombre</string>
+    <string name="type_error">Selecciona un tipo</string>
+    <string name="date_null_error">Selecciona una fecha</string>
+    <string name="date_consistence_error">Selecciona una fecha posterior</string>
+
+    <string name="videogame_name">Videojuego</string>
+    <string name="anime_name">Anime</string>
+    <string name="manga_name">Manga</string>
+    <string name="film_name">Película</string>
+    <string name="serie_name">Serie</string>
+    <string name="book_name">Libro</string>
 </resources>
