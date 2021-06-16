@@ -9,7 +9,11 @@
         android:id="@+id/libraryFragment"
         android:name="com.example.myviewinglist.ui.library.LibraryFragment"
         android:label="Library"
-        tools:layout="@layout/fragment_library"/>
+        tools:layout="@layout/fragment_library">
+        <action
+            android:id="@+id/action_libraryFragment_to_entryFragment"
+            app:destination="@id/entryFragment" />
+    </fragment>
     <fragment
         android:id="@+id/entryFormFragment"
         android:name="com.example.myviewinglist.ui.forms.EntryFormFragment"
@@ -19,5 +23,14 @@
         android:id="@+id/collectionsFragment"
         android:name="com.example.myviewinglist.ui.collections.CollectionsFragment"
         android:label="Collections"
-        tools:layout="@layout/fragment_collections_list" />
+        tools:layout="@layout/fragment_collections" >
+        <action
+            android:id="@+id/action_collectionsFragment_to_entryFragment"
+            app:destination="@id/entryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/entryFragment"
+        android:name="com.example.myviewinglist.ui.entry.EntryFragment"
+        android:label="Entry"
+        tools:layout="@layout/fragment_entry"/>
 </navigation>

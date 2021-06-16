@@ -3,6 +3,7 @@ package com.example.myviewinglist.ui.forms
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,8 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.example.myviewinglist.R
 import com.example.myviewinglist.databinding.FragmentEntryFormBinding
 import com.google.android.material.button.MaterialButtonToggleGroup
@@ -27,6 +30,7 @@ enum class State { VIEWING, COMPLETED, DROPPED, HOLD}
 class EntryFormFragment : Fragment() {
 
     private lateinit var binding: FragmentEntryFormBinding
+    private val viewModel: EntryFormViewModel by viewModels()
 
     private var datePickerOwner: TextInputEditText? = null
     private var statePicked = State.COMPLETED
@@ -36,8 +40,10 @@ class EntryFormFragment : Fragment() {
 
     private var datePicker =
             MaterialDatePicker.Builder.datePicker()
-                    .setTitleText(R.string.date_null_error)
-                    .build()
+                .setTitleText(R.string.date_null_error)
+                .setInputMode(MaterialDatePicker.INPUT_MODE_TEXT)
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .build()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -45,6 +51,16 @@ class EntryFormFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         binding = FragmentEntryFormBinding.inflate(inflater)
+
+        viewModel.entryAdded.observe(viewLifecycleOwner, Observer { value ->
+            if (value == 1) {
+                createSnackBar(true)
+                viewModel.resetEntryAdded()
+            } else if (value == -1) {
+                createSnackBar(false)
+                viewModel.resetEntryAdded()
+            }
+        })
 
         return binding.root
     }
@@ -56,7 +72,8 @@ class EntryFormFragment : Fragment() {
 
         //Dropdown tipo de Entry
         val adapter =
-                ArrayAdapter.createFromResource(requireContext(), R.array.entry_type, R.layout.list_item)
+            ArrayAdapter.createFromResource(
+                requireContext(), R.array.entry_type, R.layout.basic_list_item)
         (binding.entryType.editText as? AutoCompleteTextView)?.setAdapter(adapter)
 
         //Botones de estado
@@ -65,11 +82,11 @@ class EntryFormFragment : Fragment() {
                     _, checkedId, isChecked -> toggleButtonManager(checkedId, isChecked) })
 
         //Date picker
-        binding.publicationDate.setEndIconOnClickListener {
+        binding.publicationDateValue.setOnClickListener {
             openDatePicker()
             datePickerOwner = binding.publicationDateValue
         }
-        binding.completeDate.setEndIconOnClickListener {
+        binding.completeDate.setOnClickListener {
             openDatePicker()
             datePickerOwner = binding.completeDateValue
         }
@@ -82,26 +99,31 @@ class EntryFormFragment : Fragment() {
         }
 
         //Boton de completado
-        binding.addButton.setOnClickListener { checkFormFields() }
+        binding.addButton.setOnClickListener { checkFields() }
+
+        //Entrada añadida?
+
     }
 
     private fun toggleButtonManager(buttonId: Int, isChecked: Boolean) {
         if (isChecked) {
-            if (buttonId == R.id.toggleCompleted) {
-                binding.completeDate.visibility = View.VISIBLE
-                statePicked = State.COMPLETED
-            }
-            else if (buttonId == R.id.toggleDropped){
-                binding.completeDate.visibility = View.GONE
-                statePicked = State.DROPPED
-            }
-            else if (buttonId == R.id.toggleViewing){
-                statePicked = State.VIEWING
-                binding.completeDate.visibility = View.GONE
-            }
-            else {
-                statePicked = State.HOLD
-                binding.completeDate.visibility = View.GONE
+            when (buttonId) {
+                R.id.toggleCompleted -> {
+                    binding.completeDate.visibility = View.VISIBLE
+                    statePicked = State.COMPLETED
+                }
+                R.id.toggleDropped -> {
+                    binding.completeDate.visibility = View.GONE
+                    statePicked = State.DROPPED
+                }
+                R.id.toggleViewing -> {
+                    statePicked = State.VIEWING
+                    binding.completeDate.visibility = View.GONE
+                }
+                else -> {
+                    statePicked = State.HOLD
+                    binding.completeDate.visibility = View.GONE
+                }
             }
         }
     }
@@ -117,8 +139,22 @@ class EntryFormFragment : Fragment() {
         datePickerOwner?.setText(parsedDate)
     }
 
+    @SuppressLint("ShowToast")
+    private fun createSnackBar(state: Boolean) {
+
+        val message: String = if (state) {
+            getString(R.string.entry_created)
+        } else {
+            getString(R.string.entry_fail)
+        }
+
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
+            .setAnchorView(R.id.nav_view)
+            .show()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun checkFormFields() {
+    private fun checkFields() {
         var canAdd = true
 
         val name = binding.entryNameValue.text.toString()
@@ -137,43 +173,22 @@ class EntryFormFragment : Fragment() {
             binding.entryType.error = null
         }
 
-        val state = statePicked //?.ordinal
-
-        var publicationDate: LocalDate? = null
-        if (binding.publicationDateValue.text.toString() != "") {
-            publicationDate =
-                    LocalDate.parse(
-                            binding.publicationDateValue.text.toString(), formatter)
-
-            binding.publicationDate.error = null
-        }
-        else {
+        //val state = statePicked
+        val publicationDate = binding.publicationDateValue.text.toString()
+        if (publicationDate == "") {
             canAdd = false
             binding.publicationDate.error = getString(R.string.date_null_error)
         }
-
-        var completeDate: LocalDate? = null
-        if (state == State.COMPLETED) {
-            if (binding.publicationDateValue.text.toString() != "") {
-                completeDate =
-                        LocalDate.parse(
-                                binding.completeDateValue.text.toString(), formatter)
-
-                binding.completeDate.error = null
-
-                if (publicationDate != null && completeDate.isBefore(publicationDate)) {
-                    canAdd = false
-                    binding.completeDate.error = getString(R.string.date_consistence_error)
-                }
-            } else {
-                canAdd = false
-                binding.completeDate.error = getString(R.string.date_null_error)
-            }
+        else {
+            binding.publicationDate.error = null
         }
-        val annotation = binding.entryAnnotationValue.text.toString()
 
         if (canAdd) {
-            Snackbar.make(requireView(), R.string.form_completed, Snackbar.LENGTH_LONG).show()
+            Log.d("Dbug", "Datos enviados al view model")
+            viewModel.createNewEntry(name, type, publicationDate)
+        }
+        else {
+            Log.d("Dbug", "No se pueden enviar los datos")
         }
     }
 }

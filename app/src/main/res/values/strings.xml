@@ -21,7 +21,8 @@
     <string name="form_add_collection">Añadir colecciones</string>
     <string name="form_annotation">Anotaciones</string>
     <string name="form_add">Crear entrada</string>
-    <string name="form_completed">Entrada añadida</string>
+    <string name="entry_created">Entrada añadida</string>
+    <string name="entry_fail">Fallo al crear nueva entrada</string>
 
     <string name="name_error">Introduzca un nombre</string>
     <string name="type_error">Selecciona un tipo</string>
@@ -34,4 +35,6 @@
     <string name="film_name">Película</string>
     <string name="serie_name">Serie</string>
     <string name="book_name">Libro</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

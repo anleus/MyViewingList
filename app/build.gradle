@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -41,9 +42,16 @@ android {
     }
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: "androidx.navigation.safeargs"
+apply plugin: "kotlin-kapt"
 
 dependencies {
 
@@ -66,8 +74,22 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
 
+    //retrofit
+        //implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    //retrofit with moshi converter
+        //implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+
+    //coil
+    implementation "io.coil-kt:coil:1.1.1"
+
+    //firecoil
+    implementation 'com.github.rosariopfernandes:firecoil:0.3.0'
+
+    // moshi
+        //implementation 'com.squareup.moshi:moshi-kotlin:1.9.3'
+
     //firebase
-    implementation 'com.google.firebase:firebase-database-ktx:19.7.0'
+    implementation 'com.google.firebase:firebase-database-ktx:20.0.0'
     implementation platform('com.google.firebase:firebase-bom:27.1.0')
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-firestore-ktx'
