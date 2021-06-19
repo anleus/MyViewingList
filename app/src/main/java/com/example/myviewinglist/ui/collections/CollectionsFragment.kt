@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myviewinglist.databinding.FragmentCollectionsBinding
 import com.example.myviewinglist.ui.EntryListAdapter
@@ -46,6 +47,10 @@ class CollectionsFragment : Fragment(), EntryListAdapter.OnItemClickListener {
 
     override fun onItemClick(position: Int) {
         val item = viewModel.entries.value?.get(position)
+
+        val action = CollectionsFragmentDirections.actionCollectionsFragmentToEntryFragment(item)
+        view?.findNavController()?.navigate(action)
+
         Toast.makeText(requireContext(), "${item?.name}", Toast.LENGTH_SHORT).show()
     }
 }

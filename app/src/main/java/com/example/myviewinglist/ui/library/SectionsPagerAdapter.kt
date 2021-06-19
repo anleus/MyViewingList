@@ -11,7 +11,7 @@ import com.example.myviewinglist.ui.library.tabs.WaitingFragment
 import com.example.myviewinglist.ui.library.tabs.WatchingFragment
 
 private val TAB_TITLES = arrayOf(
-    R.string.watching_name,
+    R.string.viewing_name,
     R.string.waiting_name,
     R.string.completed_name,
     R.string.dropped_name

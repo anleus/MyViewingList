@@ -19,8 +19,8 @@
 
         <ImageView
             android:id="@+id/entryCover"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:scaleType="fitXY"
             android:padding="2dp"
             app:imageUrl="@{entry.cover}"
@@ -42,7 +42,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@{entry.name}"
-                android:textAppearance="?attr/textAppearanceListItem"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
                 tools:text="Nombre entrada" />
 
             <TextView
@@ -50,7 +50,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{entry.type}"
-                android:textAppearance="?attr/textAppearanceSubtitle2"
                 tools:text="Tipo"/>
 
         </LinearLayout>

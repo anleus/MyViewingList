@@ -2,16 +2,48 @@
     <!-- Base application theme. -->
     <style name="Theme.MyViewingList" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
+        <item name="colorOnPrimary">@color/primaryTextColor</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/secondaryLightColor</item>
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
+        <item name="colorOnSecondary">@color/secondaryTextColor</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="FormButton">
+        <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:backgroundTint">@color/secondaryColor</item>
+    </style>
+
+    <style name="CompleteStateButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/completedColor</item>
+        <item name="strokeColor">@color/completedColor</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:text">@string/completed_name</item>
+    </style>
+
+    <style name="ViewingStateButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/viewingColor</item>
+        <item name="strokeColor">@color/viewingColor</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:text">@string/viewing_name</item>
+    </style>
+
+    <style name="WaitingStateButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/waitingColor</item>
+        <item name="strokeColor">@color/waitingColor</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:text">@string/waiting_name</item>
+    </style>
+
+    <style name="DroppedStateButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/droppedColor</item>
+        <item name="strokeColor">@color/droppedColor</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:text">@string/dropped_name</item>
     </style>
 
     <style name="Theme.MyViewingList.NoActionBar">

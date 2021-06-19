@@ -32,5 +32,10 @@
         android:id="@+id/entryFragment"
         android:name="com.example.myviewinglist.ui.entry.EntryFragment"
         android:label="Entry"
-        tools:layout="@layout/fragment_entry"/>
+        tools:layout="@layout/fragment_entry">
+        <argument
+            android:name="entry"
+            app:argType="com.example.myviewinglist.model.Entry"
+            app:nullable="true" />
+    </fragment>
 </navigation>

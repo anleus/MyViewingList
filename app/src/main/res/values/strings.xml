@@ -4,15 +4,26 @@
     <string name="action_search">Búsqueda</string>
     <string name="action_statistics">Estadísticas</string>
 
+    <!--Bottom Nav-->
     <string name="library_name">Biblioteca</string>
     <string name="collection_name">Colecciones</string>
     <string name="add_name">Añadir cosa</string>
 
-    <string name="watching_name">Viendo</string>
+    <!--States-->
+    <string name="viewing_name">Viendo</string>
     <string name="waiting_name">Pendiente</string>
-    <string name="completed_name">Done</string>
+    <string name="completed_name">Completado</string>
     <string name="dropped_name">Dropped</string>
+    
+    <!--Types-->
+    <string name="videogame_name">Videojuego</string>
+    <string name="anime_name">Anime</string>
+    <string name="manga_name">Manga</string>
+    <string name="film_name">Película</string>
+    <string name="serie_name">Serie</string>
+    <string name="book_name">Libro</string>
 
+    <!--Form-->
     <string name="form_name">Nombre</string>
     <string name="form_type">Tipo</string>
     <string name="form_publication_text">Publicado el</string>
@@ -23,18 +34,18 @@
     <string name="form_add">Crear entrada</string>
     <string name="entry_created">Entrada añadida</string>
     <string name="entry_fail">Fallo al crear nueva entrada</string>
-
+        <!--Error-->
     <string name="name_error">Introduzca un nombre</string>
     <string name="type_error">Selecciona un tipo</string>
     <string name="date_null_error">Selecciona una fecha</string>
     <string name="date_consistence_error">Selecciona una fecha posterior</string>
 
-    <string name="videogame_name">Videojuego</string>
-    <string name="anime_name">Anime</string>
-    <string name="manga_name">Manga</string>
-    <string name="film_name">Película</string>
-    <string name="serie_name">Serie</string>
-    <string name="book_name">Libro</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--Entry Details-->
+    <string name="entry_publication">Publicado el:</string>
+    <string name="entry_completed">Completado el:</string>
+    <string name="entry_annotation">Anotaciones</string>
+    <string name="entry_annotation_add">Añadir</string>
+    <string name="entry_annotation_edit">Editar</string>
+    <string name="entry_annotation_update">Actualizar</string>
+
 </resources>

@@ -71,7 +71,7 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/watching_name" />
+                android:text="@string/viewing_name" />
 
             <Button
                 android:id="@+id/toggleOnHold"
@@ -172,7 +172,8 @@
             android:text="@string/form_add"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/entryAnnotation" />
+            app:layout_constraintTop_toBottomOf="@+id/entryAnnotation"
+            style="@style/FormButton"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
