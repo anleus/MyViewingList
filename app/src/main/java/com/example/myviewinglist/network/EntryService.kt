@@ -3,6 +3,7 @@ package com.example.myviewinglist.network
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.myviewinglist.model.AddedEntry
 import com.example.myviewinglist.model.Entry
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CompletableDeferred
@@ -10,6 +11,7 @@ import kotlinx.coroutines.CompletableDeferred
 class EntryService {
 
     var db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    val testUserId: String = "PyhdAWstL5Ck8BVaCKNm"
 
     //add paginacion
      fun getAllEntries() : LiveData<MutableList<Entry>> {
@@ -31,46 +33,58 @@ class EntryService {
                 entriesList.sortBy { it.name }
                 mutableData.value = entriesList
             }
-            .addOnFailureListener{ exception ->
+            .addOnFailureListener { exception ->
                 Log.d("Service", "Exception reading: $exception")
             }
         return mutableData
     }
-/*
-    fun getEntriesByName(name: String?) : LiveData<MutableList<Entry>> {
-        val mutableData = MutableLiveData<MutableList<Entry>>()
-        val entriesList = mutableListOf<Entry>()
 
-        FirebaseFirestore.getInstance().collection("entries").where(name >= )
-            .addOnSuccessListener { documents ->
-                if (documents != null) {
-                    for (document in documents) {
-                        val name = document.getString("name")
-                        val type = document.getString("type")
-                        val publication = document.getTimestamp("publication")
+    suspend fun getEntryById(entryId: String) : Entry? {
+        val reqEntry = CompletableDeferred<Entry?>()
 
-                        val entry = Entry(document.id, name!!, type!!, "", publication!!)
-                        entriesList.add(entry)
-                    }
-                    mutableData.value = entriesList
-                }
+        db.collection("entries").document(entryId)
+            .get()
+            .addOnSuccessListener { document ->
+                val name = document.getString("name")
+                val type = document.getString("type")
+                val publication = document.getString("publication")
+                val cover = document.getString("cover")
+
+                reqEntry.complete(Entry(document.id, name!!, type!!, cover, publication!!))
             }
-            .addOnFailureListener{ exception ->
+            .addOnFailureListener { exception ->
                 Log.d("Service", "Exception reading: $exception")
+                reqEntry.complete(null)
             }
-        return mutableData
-    }
-*/
-
-    fun getEntryById(entryId: String) : Entry? {
-        return null
+        return reqEntry.await()
     }
 
     fun getUserEntries(userId: String) : List<Entry> {
         return listOf()
     }
 
-      fun addNewEntry(entryData: HashMap<String, String>) : String {
+    suspend fun getUserAddedEntry(entryId: String) : AddedEntry? {
+        val reqAddedEntry = CompletableDeferred<AddedEntry?>()
+
+        db.collection("users").document(testUserId)
+            .collection("added_entries").document(entryId)
+            .get()
+            .addOnSuccessListener { document ->
+                val state = document.getString("state")
+                val completeDate = document.getString("completeDate")
+                val annotation = document.getString("annotation")
+
+                reqAddedEntry.complete(AddedEntry(entryId, state, completeDate, annotation))
+            }
+            .addOnFailureListener { exception ->
+                Log.d("Service", "Exception reading: $exception")
+                reqAddedEntry.complete(null)
+            }
+
+        return reqAddedEntry.await()
+    }
+
+    fun addNewEntry(entryData: HashMap<String, String>) : String {
         var entryId = ""
 
             db.collection("entries")
@@ -93,21 +107,9 @@ class EntryService {
 
         query.get()
             .addOnSuccessListener { documents ->
-                Log.d("Dbug", "Checkeo con nombre: $name y tipo $type")
-                if (!documents.isEmpty) {
-                    Log.d("Dbug", "Checking if documents are the same")
-                    for (doc in documents) {
-                        Log.d("Dbug", "name: ${doc.getString("lc_name")} and type: ${doc.getString("type")}")
-                    }
-
-                    entryExist.complete(true)
-
-                } else {
-                    entryExist.complete(false)
-                }
+                entryExist.complete(!documents.isEmpty)
             }
-            .addOnFailureListener{ exception ->
-                Log.d("Dbug", "Exception comparing: $exception")
+            .addOnFailureListener{
                 entryExist.complete(true)
             }
 

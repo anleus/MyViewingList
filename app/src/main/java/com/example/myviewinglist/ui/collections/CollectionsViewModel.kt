@@ -35,19 +35,6 @@ class CollectionsViewModel : ViewModel() {
                  _entries.value = mutableListOf<Entry>()
              }
          }
-        /*
-        viewModelScope.launch {
-            _status.value = EntriesServiceStatus.LOADING
-            try {
-                _entries.value = service.getAllEntries()
-                //Log.d("Service", "entry n1 is ${entries.value?.get(0)?.name}")
-                _status.value = EntriesServiceStatus.DONE
-            } catch (e: Exception) {
-                Log.d("Service", "exception in viewModel, exception: $e")
-                _entries.value = listOf()
-                _status.value = EntriesServiceStatus.ERROR
-            }
-        }
-        */
+        //Falta lo de loading y demas
     }
 }

@@ -1,6 +1,5 @@
 package com.example.myviewinglist.ui.forms
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,7 +30,6 @@ class EntryFormViewModel: ViewModel() {
             "publication" to publication)
 
         viewModelScope.launch {
-            Log.d("Dbug", "Inicio de la corutina")
             try {
                 if (!service.checkEntryExist(data["lc_name"], data["type"])!!) {
 
@@ -41,22 +39,16 @@ class EntryFormViewModel: ViewModel() {
                     addedId.await()
                     lastEntryId = addedId.toString()
 
-                    Log.d("Dbug", "Se ha comprobado y no hay ninguna entrada igual")
-
                     if (lastEntryId != "") {
                         _entryAdded.value = 1
-                        Log.d("Dbug", "Se ha añadido con exito la entrada a la BD")
                     }
                     else {
                         _entryAdded.value = -1
-                        Log.d("Dbug", "No se ha añadido con exito la entrada a la BD")
                     }
                 } else {
-                    Log.d("Dbug", "Se ha comprobado y si hay entrada igual")
                     _entryAdded.value = -1
                 }
             } catch (e: Exception) {
-                Log.d("Dbug", "Fallo en viewModel, exception $e")
                 _entryAdded.value = -1
             }
         }

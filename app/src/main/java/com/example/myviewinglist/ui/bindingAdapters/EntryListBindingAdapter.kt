@@ -1,6 +1,5 @@
 package com.example.myviewinglist.ui
 
-import android.util.Log
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.google.firebase.storage.FirebaseStorage
@@ -11,9 +10,10 @@ val storageRef = FirebaseStorage.getInstance().reference
 @BindingAdapter("imageUrl")
 fun bindImage(imageView: ImageView, imgUrl: String?) {
     if (imgUrl != null) {
-        Log.d("Dbug", "cargando la imagen")
+        //Log.d("Dbug", "cargando la imagen")
         imageView.load(storageRef.child(imgUrl))
         //add lo de error
+        //va mal
     }
 }
 

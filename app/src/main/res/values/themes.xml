@@ -19,9 +19,8 @@
     </style>
 
     <style name="CompleteStateButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:textColor">@color/completedColor</item>
-        <item name="strokeColor">@color/completedColor</item>
-        <item name="strokeWidth">2dp</item>
+        <item name="backgroundTint">@color/completedColor</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
         <item name="android:text">@string/completed_name</item>
     </style>
 
