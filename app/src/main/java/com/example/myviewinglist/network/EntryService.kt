@@ -11,7 +11,7 @@ import kotlinx.coroutines.CompletableDeferred
 class EntryService {
 
     var db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    val testUserId: String = "PyhdAWstL5Ck8BVaCKNm"
+    private val testUserId: String = "PyhdAWstL5Ck8BVaCKNm"
 
     //add paginacion
      fun getAllEntries() : LiveData<MutableList<Entry>> {
@@ -84,7 +84,7 @@ class EntryService {
         return reqAddedEntry.await()
     }
 
-    fun addNewEntry(entryData: HashMap<String, String>) : String {
+    fun addEntry(entryData: HashMap<String, String>) : String {
         var entryId = ""
 
             db.collection("entries")
@@ -99,7 +99,60 @@ class EntryService {
         return entryId
     }
 
-     suspend fun checkEntryExist(name: String?, type: String?) : Boolean? {
+    suspend fun addAddedEntry(entryId: String, addedEntryData: HashMap<String, String>): Boolean? {
+        val success = CompletableDeferred<Boolean?>()
+
+        db.collection("users").document(testUserId)
+            .collection("added_entries")
+            .document(entryId).set(addedEntryData)
+            .addOnSuccessListener {
+                success.complete(true)
+            }
+            .addOnFailureListener {
+                success.complete(false)
+            }
+
+        return success.await()
+    }
+
+    suspend fun updateAddedEntry(entryId: String, addedEntryData: HashMap<String, String>) : Boolean? {
+        val success = CompletableDeferred<Boolean?>()
+
+        val addedEntryRef = db.collection("users").document(testUserId)
+            .collection("added_entries").document(entryId)
+
+        for ((field, value) in addedEntryData) {
+            addedEntryRef.update(field, value)
+                .addOnSuccessListener {
+                    success.complete(true)
+                }
+                .addOnFailureListener {
+                    success.complete(false)
+                }
+        }
+
+        return success.await()
+    }
+
+    suspend fun checkAddedEntryExists(entryId: String) : Boolean? {
+        val addedEntryExist = CompletableDeferred<Boolean?>()
+
+        db.collection("users").document(testUserId)
+            .collection("added_entries")
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    if (document.id == entryId) {
+                        addedEntryExist.complete(true)
+                    } else {
+                        addedEntryExist.complete(false)
+                    }
+                }
+            }
+        return addedEntryExist.await()
+    }
+
+     suspend fun checkEntryExists(name: String?, type: String?) : Boolean? {
         val entriesRef = db.collection("entries")
         val query = entriesRef.whereEqualTo("lc_name", name).whereEqualTo("type", type)
 

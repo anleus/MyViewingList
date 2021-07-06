@@ -8,4 +8,11 @@
         <item>@string/serie_name</item>
         <item>@string/book_name</item>
     </string-array>
+
+    <string-array name="entry_state">
+        <item>@string/completed_name</item>
+        <item>@string/viewing_name</item>
+        <item>@string/waiting_name</item>
+        <item>@string/dropped_name</item>
+    </string-array>
 </resources>

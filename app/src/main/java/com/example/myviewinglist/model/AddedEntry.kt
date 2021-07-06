@@ -1,6 +1,6 @@
 package com.example.myviewinglist.model
 
 data class AddedEntry(val entryId: String? = null,
-                      val state: String? = null,
-                      val completeDate: String? = null,
-                      val annotation: String? = null)
+                      var state: String? = null,
+                      var completeDate: String? = null,
+                      var annotation: String? = null)

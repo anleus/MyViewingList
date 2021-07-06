@@ -10,12 +10,13 @@
     <string name="add_name">Añadir cosa</string>
 
     <!--States-->
+    <string name="states_title">Estado</string>
     <string name="viewing_name">Viendo</string>
     <string name="waiting_name">Pendiente</string>
     <string name="completed_name">Completado</string>
     <string name="dropped_name">Dropped</string>
     <string name="save_name">Guardar</string>
-    
+
     <!--Types-->
     <string name="videogame_name">Videojuego</string>
     <string name="anime_name">Anime</string>
@@ -24,7 +25,7 @@
     <string name="serie_name">Serie</string>
     <string name="book_name">Libro</string>
 
-    <!--Form-->
+    <!--Entry Form-->
     <string name="form_name">Nombre</string>
     <string name="form_type">Tipo</string>
     <string name="form_publication_text">Publicado el</string>
@@ -35,7 +36,7 @@
     <string name="form_add">Crear entrada</string>
     <string name="entry_created">Entrada añadida</string>
     <string name="entry_fail">Fallo al crear nueva entrada</string>
-        <!--Error-->
+    <!--Error-->
     <string name="name_error">Introduzca un nombre</string>
     <string name="type_error">Selecciona un tipo</string>
     <string name="date_null_error">Selecciona una fecha</string>
@@ -48,5 +49,14 @@
     <string name="entry_annotation_add">Añadir</string>
     <string name="entry_annotation_edit">Editar</string>
     <string name="entry_annotation_update">Actualizar</string>
+    <string name="update_success">Entrada actualizada</string>
+    <string name="update_error">Fallo al actualizar la entrada</string>
+    <string name="add_success">Entrada guardada con éxito</string>
+    <string name="add_error">Fallo al guardar la entrada</string>
+    <string name="save_error">No se ha podido realizar la operación</string>
+
+    <!--Dialog-->
+    <string name="cancel">Cancelar</string>
+    <string name="ok">Aceptar</string>
 
 </resources>

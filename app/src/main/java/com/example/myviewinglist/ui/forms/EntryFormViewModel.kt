@@ -31,10 +31,10 @@ class EntryFormViewModel: ViewModel() {
 
         viewModelScope.launch {
             try {
-                if (!service.checkEntryExist(data["lc_name"], data["type"])!!) {
+                if (!service.checkEntryExists(data["lc_name"], data["type"])!!) {
 
                     val addedId = CompletableDeferred<String?>()
-                    addedId.complete(service.addNewEntry(data))
+                    addedId.complete(service.addEntry(data))
 
                     addedId.await()
                     lastEntryId = addedId.toString()

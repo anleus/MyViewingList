@@ -1,8 +1,6 @@
 package com.example.myviewinglist.ui.entry
 
 import android.os.Bundle
-import android.util.Log
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +10,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.myviewinglist.R
 import com.example.myviewinglist.databinding.FragmentEntryBinding
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EntryDetailsFragment : Fragment() {
 
@@ -19,13 +24,16 @@ class EntryDetailsFragment : Fragment() {
     private val viewModel by lazy { ViewModelProvider(this).get(EntryDetailsViewModel::class.java)}
     private lateinit var entryId: String
 
-    lateinit var newContext : ContextThemeWrapper
+    private lateinit var selectedState: String
+    private lateinit var completeDate: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             entryId = it.getString("entryId").toString()
             viewModel.initializeDetailsPage(entryId)
+
+            selectedState = getString(R.string.waiting_name)
         }
     }
 
@@ -42,57 +50,161 @@ class EntryDetailsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setAnnotationButtonText()
-        selectSateButtonStyle()
+        addedEntryObserver()
+        operationStateObserver()
+
+        binding.stateButton.setOnClickListener {
+            showStatePicker()
+        }
 
         binding.annotationButton.setOnClickListener {
-            when (binding.annotationButton.text.toString()) {
-                getString(R.string.entry_annotation_add) -> {
-                    binding.annotationText.visibility = View.GONE
-                    binding.annotationEditLayout.visibility = View.VISIBLE
-                    binding.annotationButton.text = getString(R.string.entry_annotation_update)
-                }
-                getString(R.string.entry_annotation_edit) -> {
-                    binding.annotationText.visibility = View.GONE
-                    binding.annotationEditLayout.visibility = View.VISIBLE
-                    binding.annotationButton.text = getString(R.string.entry_annotation_update)
-                }
-                getString(R.string.entry_annotation_update) -> {
-                    binding.annotationText.visibility = View.VISIBLE
-                    binding.annotationEditLayout.visibility = View.GONE
-                    binding.annotationButton.text = getString(R.string.entry_annotation_edit)
-                    //ademas hay que guardarlo en la bd
-                }
+            setAnnotationVisibility(binding.annotationText.text.toString())
+        }
+    }
+
+    //region observers
+    private fun addedEntryObserver() {
+        viewModel.addedEntry.observe(viewLifecycleOwner, Observer {
+            setAnnotationButtonText(it.annotation)
+            setStateButtonStyle(it.state)
+            setCompleteDateVisibility(it.state)
+        })
+    }
+
+    private fun operationStateObserver() {
+        viewModel.operationState.observe(viewLifecycleOwner, Observer { value ->
+            createOperationSnackBar(value)
+        })
+    }
+    //endregion
+
+    private fun setAnnotationButtonText(annotation: String?) {
+        if (annotation == null) {
+            binding.annotationButton.text = getString(R.string.entry_annotation_add)
+        }
+        else {
+            binding.annotationButton.text = getString(R.string.entry_annotation_edit)
+        }
+    }
+
+    private fun setCompleteDateVisibility(state: String?) {
+        val completeDateLayout = binding.completeDateLayout
+
+        when (state) {
+            getString(R.string.completed_name) -> completeDateLayout.visibility = View.VISIBLE
+            else -> completeDateLayout.visibility = View.GONE
+        }
+    }
+
+    private fun setStateButtonStyle(state: String?) {
+        val stateButton = binding.stateButton
+
+        when (state) {
+            getString(R.string.completed_name) -> applyCompletedStyle(stateButton)
+            getString(R.string.viewing_name) -> applyViewingStyle(stateButton)
+            getString(R.string.waiting_name) -> applyWaitingStyle(stateButton)
+            getString(R.string.dropped_name) -> applyDroppedStyle(stateButton)
+            else -> { }
+        }
+    }
+
+    private fun setAnnotationVisibility(annotation: String?) {
+        when (annotation) {
+            getString(R.string.entry_annotation_add) -> {
+                binding.annotationText.visibility = View.GONE
+                binding.annotationEditLayout.visibility = View.VISIBLE
+                binding.annotationButton.text = getString(R.string.entry_annotation_update)
+            }
+            getString(R.string.entry_annotation_edit) -> {
+                binding.annotationText.visibility = View.GONE
+                binding.annotationEditLayout.visibility = View.VISIBLE
+                binding.annotationButton.text = getString(R.string.entry_annotation_update)
+            }
+            getString(R.string.entry_annotation_update) -> {
+                binding.annotationText.visibility = View.VISIBLE
+                binding.annotationEditLayout.visibility = View.GONE
+                binding.annotationButton.text = getString(R.string.entry_annotation_edit)
+                //ademas hay que guardarlo en la bd
             }
         }
     }
 
-    private fun setAnnotationButtonText() {
-        viewModel.addedEntry.observe(viewLifecycleOwner, Observer {
-            if (it.annotation == null) {
-                binding.annotationButton.text = getString(R.string.entry_annotation_add)
+    private fun showStatePicker() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.states_title))
+            .setPositiveButton(resources.getString(R.string.ok)) { _, _ ->
+                    when (selectedState) {
+                        getString(R.string.completed_name) -> {
+                            showDatePicker()
+                        }
+                        else -> {
+                            setStateButtonStyle(selectedState)
+                            viewModel.updateAddedEntry(selectedState)
+                            setCompleteDateVisibility(selectedState)
+                        }
+                    }
             }
-            else {
-                binding.annotationButton.text = getString(R.string.entry_annotation_edit)
+            .setSingleChoiceItems(resources.getStringArray(R.array.entry_state), 1)
+            { _, which ->
+                selectedState = resources.getStringArray(R.array.entry_state)[which]
             }
-        })
+            .show()
     }
 
-    private fun selectSateButtonStyle() {
-        val stateButton = binding.stateButton
+    private fun showDatePicker() {
+        val date = stringDateToLong(viewModel.entry.value?.publication!!)
 
-        viewModel.addedEntry.observe(viewLifecycleOwner, Observer {
-            Log.d("Dbug", "Observando addedEntry $it")
-            when (it.state) {
-                getString(R.string.completed_name) -> applyCompletedStyle(stateButton)
-                getString(R.string.viewing_name) -> applyViewingStyle(stateButton)
-                getString(R.string.waiting_name) -> applyWaitingStyle(stateButton)
-                getString(R.string.dropped_name) -> applyDroppedStyle(stateButton)
-                else -> { }
-            }
-        })
+        val constraintBuilder =
+            CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.from(date))
+
+        val datePicker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText(R.string.date_null_error)
+            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+            .setCalendarConstraints(constraintBuilder.build())
+            .build()
+
+        datePicker.addOnPositiveButtonClickListener {
+            completeDate = longToStringDate(it)
+            setStateButtonStyle(selectedState)
+            viewModel.updateAddedEntry(selectedState, completeDate)
+            setCompleteDateVisibility(selectedState)
+        }
+
+        datePicker.show(childFragmentManager, "datePicker")
     }
 
+    private fun createOperationSnackBar(state: Int) {
+        val message =
+            when (state) {
+                -1 -> getString(R.string.add_error)
+                1 -> getString(R.string.add_success)
+
+                -2 -> getString(R.string.update_error)
+                2 -> getString(R.string.update_success)
+                -3 -> getString(R.string.save_error)
+                else -> ""
+            }
+
+        if (message != "") {
+            Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
+            viewModel.resetOperationState()
+        }
+    }
+
+    private fun longToStringDate(time: Long) : String {
+        val date = Date(time)
+        val format = SimpleDateFormat("dd/MM/yyyy")
+        return format.format(date)
+    }
+
+    private fun stringDateToLong(date: String) : Long {
+        val df = SimpleDateFormat("dd/MM/yyyy")
+        return df.parse(date).time
+    }
+
+
+    //region state styles
     private fun applyCompletedStyle(buttonView: MaterialButton) {
         with(buttonView) {
             setText(R.string.completed_name)
@@ -102,7 +214,6 @@ class EntryDetailsFragment : Fragment() {
     }
 
     private fun applyViewingStyle(buttonView: MaterialButton) {
-        Log.d("Dbug", "Aplicando estilo completado")
         with(buttonView) {
             setText(com.example.myviewinglist.R.string.viewing_name)
             setTextColor(resources.getColor(com.example.myviewinglist.R.color.primaryTextColor))
@@ -125,4 +236,6 @@ class EntryDetailsFragment : Fragment() {
             setBackgroundColor(resources.getColor(com.example.myviewinglist.R.color.droppedColor))
         }
     }
+
+    //endregion
 }

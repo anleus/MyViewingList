@@ -3,18 +3,19 @@ package com.example.myviewinglist.ui
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.google.firebase.storage.FirebaseStorage
-import io.github.rosariopfernandes.firecoil.load
 
 val storageRef = FirebaseStorage.getInstance().reference
 
 @BindingAdapter("imageUrl")
 fun bindImage(imageView: ImageView, imgUrl: String?) {
+    /*
     if (imgUrl != null) {
         //Log.d("Dbug", "cargando la imagen")
         imageView.load(storageRef.child(imgUrl))
         //add lo de error
         //va mal
     }
+    */
 }
 
 /*@BindingAdapter("android:text")

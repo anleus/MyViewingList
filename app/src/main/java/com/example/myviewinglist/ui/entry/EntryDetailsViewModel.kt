@@ -22,6 +22,9 @@ class EntryDetailsViewModel : ViewModel() {
     private val _addedEntry = MutableLiveData<AddedEntry>()
     val addedEntry: LiveData<AddedEntry> = _addedEntry
 
+    private val _operationState = MutableLiveData<Int>()
+    val operationState = _operationState
+
     var showLoading: Boolean = true
 
     private suspend fun getEntry(entryId: String): Boolean {
@@ -38,7 +41,6 @@ class EntryDetailsViewModel : ViewModel() {
         } catch (e: Exception) {
             return false
         }
-
         return success
     }
 
@@ -55,9 +57,69 @@ class EntryDetailsViewModel : ViewModel() {
         } catch (e: Exception) {
             return false
         }
-
         return success
     }
+
+    fun updateAddedEntry(state: String? = null,  completeDate: String? = null, annotation: String? = null) {
+        val data = hashMapOf<String, String>()
+        var isNewAddedEntry = false
+
+        if (_addedEntry.value?.state == null) {
+            isNewAddedEntry = true
+            _addedEntry.value = AddedEntry(entry.value?.id)
+        }
+
+        if (state != null) {
+            _addedEntry.value?.state = state
+            data["state"] = state
+        }
+        if (completeDate != null) {
+            _addedEntry.value?.completeDate = completeDate
+            data["completeDate"] = completeDate
+        }
+        if (annotation != null) {
+            _addedEntry.value?.annotation = annotation
+            data["annotation"] = annotation
+        }
+
+        viewModelScope.launch {
+            val successfulOperation = CompletableDeferred<Boolean?>()
+
+            try {
+                if (isNewAddedEntry) {
+                    successfulOperation.complete(service.addAddedEntry(_addedEntry.value?.entryId!!, data))
+                    operationState(0, successfulOperation.await())
+                } else {
+                    successfulOperation.complete(service.updateAddedEntry(_addedEntry.value?.entryId!!, data))
+                    operationState(1, successfulOperation.await())
+                }
+            } catch (e: Exception) {
+                successfulOperation.complete(false)
+                operationState(-1, successfulOperation.await())
+            }
+        }
+    }
+
+    private fun operationState(isUpdate: Int, success: Boolean?) {
+        when (isUpdate) {
+            0 -> {
+                if (success!!) _operationState.value = 1
+                else _operationState.value = -1
+            }
+            1 -> {
+                if (success!!) _operationState.value = 2
+                else _operationState.value = -2
+            }
+            else -> {
+                _operationState.value = -3
+            }
+        }
+    }
+
+    fun resetOperationState() {
+        _operationState.value = 0
+    }
+
 
      fun initializeDetailsPage(id: String) {
         viewModelScope.launch {
