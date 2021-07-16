@@ -58,7 +58,7 @@ class EntryDetailsFragment : Fragment() {
         }
 
         binding.annotationButton.setOnClickListener {
-            setAnnotationVisibility(binding.annotationText.text.toString())
+            annotationButtonAction(binding.annotationButton.text.toString())
         }
     }
 
@@ -77,15 +77,6 @@ class EntryDetailsFragment : Fragment() {
         })
     }
     //endregion
-
-    private fun setAnnotationButtonText(annotation: String?) {
-        if (annotation == null) {
-            binding.annotationButton.text = getString(R.string.entry_annotation_add)
-        }
-        else {
-            binding.annotationButton.text = getString(R.string.entry_annotation_edit)
-        }
-    }
 
     private fun setCompleteDateVisibility(state: String?) {
         val completeDateLayout = binding.completeDateLayout
@@ -108,27 +99,44 @@ class EntryDetailsFragment : Fragment() {
         }
     }
 
-    private fun setAnnotationVisibility(annotation: String?) {
-        when (annotation) {
-            getString(R.string.entry_annotation_add) -> {
-                binding.annotationText.visibility = View.GONE
-                binding.annotationEditLayout.visibility = View.VISIBLE
-                binding.annotationButton.text = getString(R.string.entry_annotation_update)
-            }
-            getString(R.string.entry_annotation_edit) -> {
-                binding.annotationText.visibility = View.GONE
-                binding.annotationEditLayout.visibility = View.VISIBLE
-                binding.annotationButton.text = getString(R.string.entry_annotation_update)
-            }
+    //region annotation
+    private fun annotationButtonAction(annotation: String?) {
+        when (binding.annotationButton.text) {
             getString(R.string.entry_annotation_update) -> {
-                binding.annotationText.visibility = View.VISIBLE
-                binding.annotationEditLayout.visibility = View.GONE
-                binding.annotationButton.text = getString(R.string.entry_annotation_edit)
-                //ademas hay que guardarlo en la bd
+                viewModel.updateAddedEntry(
+                    null, null, binding.annotationEditValue.text.toString())
+                setAnnotationVisibility(true)
+            }
+            else -> {
+                setAnnotationVisibility(false)
             }
         }
     }
 
+    private fun setAnnotationVisibility(save: Boolean) {
+        if (save) {
+            binding.annotationText.visibility = View.VISIBLE
+            binding.annotationEditLayout.visibility = View.GONE
+            binding.annotationButton.text = getString(R.string.entry_annotation_edit)
+        } else {
+            binding.annotationText.visibility = View.GONE
+            binding.annotationEditLayout.visibility = View.VISIBLE
+            binding.annotationButton.text = getString(R.string.entry_annotation_update)
+        }
+    }
+
+    private fun setAnnotationButtonText(annotation: String?) {
+        //se llama solo al principio
+        if (annotation == null) {
+            binding.annotationButton.text = getString(R.string.entry_annotation_add)
+        }
+        else {
+            binding.annotationButton.text = getString(R.string.entry_annotation_edit)
+        }
+    }
+    //endregion
+
+    //region pickers
     private fun showStatePicker() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(resources.getString(R.string.states_title))
@@ -173,6 +181,7 @@ class EntryDetailsFragment : Fragment() {
 
         datePicker.show(childFragmentManager, "datePicker")
     }
+    //endregion
 
     private fun createOperationSnackBar(state: Int) {
         val message =
@@ -192,6 +201,7 @@ class EntryDetailsFragment : Fragment() {
         }
     }
 
+    //region utils
     private fun longToStringDate(time: Long) : String {
         val date = Date(time)
         val format = SimpleDateFormat("dd/MM/yyyy")
@@ -202,7 +212,7 @@ class EntryDetailsFragment : Fragment() {
         val df = SimpleDateFormat("dd/MM/yyyy")
         return df.parse(date).time
     }
-
+    //endregion
 
     //region state styles
     private fun applyCompletedStyle(buttonView: MaterialButton) {
