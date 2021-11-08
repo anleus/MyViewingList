@@ -8,12 +8,16 @@ import com.example.myviewinglist.model.Entry
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CompletableDeferred
 
+enum class ServiceStatus {
+    LOADING, ERROR, DONE
+}
+
 class EntryService {
 
-    var db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val testUserId: String = "PyhdAWstL5Ck8BVaCKNm"
 
-    //add paginacion
+    //add pagination
      fun getAllEntries() : LiveData<MutableList<Entry>> {
         val mutableData = MutableLiveData<MutableList<Entry>>()
         val entriesList = mutableListOf<Entry>()
@@ -130,6 +134,17 @@ class EntryService {
                     success.complete(false)
                 }
         }
+
+        return success.await()
+    }
+
+    suspend fun deleteEntry(entryId: String): Boolean? {
+        val success = CompletableDeferred<Boolean?>()
+
+        db.collection("entries").document(entryId)
+            .delete()
+            .addOnSuccessListener { success.complete(true) }
+            .addOnFailureListener { success.complete(false) }
 
         return success.await()
     }

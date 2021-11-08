@@ -50,51 +50,6 @@
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- State -->
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/toggleButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingBottom="16dp"
-            app:checkedButton="@+id/toggleCompleted"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/entryType"
-            app:selectionRequired="true"
-            app:singleSelection="true"
-            android:visibility="gone">
-            <!-- Visible cuando se puedan añadir cosas a lista -->
-
-            <Button
-                android:id="@+id/toggleViewing"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/viewing_name" />
-
-            <Button
-                android:id="@+id/toggleOnHold"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/waiting_name" />
-
-            <Button
-                android:id="@+id/toggleCompleted"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/completed_name" />
-
-            <Button
-                android:id="@+id/toggleDropped"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dropped_name" />
-        </com.google.android.material.button.MaterialButtonToggleGroup>
-
         <!-- Publication -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/publicationDate"
@@ -106,7 +61,7 @@
             app:endIconMode="custom"
             app:errorEnabled="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toggleButton">
+            app:layout_constraintTop_toBottomOf="@+id/entryType">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/publicationDateValue"
@@ -119,51 +74,6 @@
                 android:inputType="date" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Complete -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/completeDate"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/form_completed_text"
-            app:endIconCheckable="true"
-            app:endIconDrawable="@drawable/ic_calendar"
-            app:endIconMode="custom"
-            app:errorEnabled="true"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/publicationDate"
-            android:clickable="false"
-            android:visibility="gone">
-            <!-- Visible cuando se puedan añadir cosas a lista -->
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/completeDateValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Annotation -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/entryAnnotation"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/form_annotation"
-            android:paddingBottom="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/completeDate"
-            android:visibility="gone">
-            <!-- Visible cuando se puedan añadir cosas a lista -->
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/entryAnnotationValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:maxLines="5" />
-        </com.google.android.material.textfield.TextInputLayout>
-
         <!-- Done -->
         <Button
             android:id="@+id/addButton"
@@ -172,7 +82,7 @@
             android:text="@string/form_add"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/entryAnnotation"
+            app:layout_constraintTop_toBottomOf="@+id/publicationDate"
             style="@style/FormButton"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

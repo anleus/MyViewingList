@@ -1,6 +1,7 @@
 package com.example.myviewinglist.ui.entry
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.myviewinglist.R
 import com.example.myviewinglist.databinding.FragmentEntryBinding
+import com.example.myviewinglist.network.ServiceStatus
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
@@ -46,12 +48,16 @@ class EntryDetailsFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
+        viewModel.requestStatus.observe(viewLifecycleOwner, Observer { value ->
+            setServiceStatusImage(value)
+        })
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         addedEntryObserver()
-        operationStateObserver()
+        operationStatusObserver()
 
         binding.stateButton.setOnClickListener {
             showStatePicker()
@@ -71,12 +77,30 @@ class EntryDetailsFragment : Fragment() {
         })
     }
 
-    private fun operationStateObserver() {
-        viewModel.operationState.observe(viewLifecycleOwner, Observer { value ->
+    private fun operationStatusObserver() {
+        viewModel.operationStatus.observe(viewLifecycleOwner, Observer { value ->
             createOperationSnackBar(value)
         })
     }
     //endregion
+
+    private fun setServiceStatusImage(status: ServiceStatus) {
+        val statusImg = binding.statusImage
+        when (status) {
+            ServiceStatus.LOADING -> {
+                Log.d("Service", "Service in loading status")
+                statusImg.visibility = View.VISIBLE
+                statusImg.setImageResource(R.drawable.loading_animation)
+            }
+            ServiceStatus.ERROR -> {
+                statusImg.visibility = View.VISIBLE
+                statusImg.setImageResource(R.drawable.ic_connection_error)
+            }
+            ServiceStatus.DONE -> {
+                statusImg.visibility = View.GONE
+            }
+        }
+    }
 
     private fun setCompleteDateVisibility(state: String?) {
         val completeDateLayout = binding.completeDateLayout
@@ -103,9 +127,9 @@ class EntryDetailsFragment : Fragment() {
     private fun annotationButtonAction(annotation: String?) {
         when (binding.annotationButton.text) {
             getString(R.string.entry_annotation_update) -> {
+                setAnnotationVisibility(true)
                 viewModel.updateAddedEntry(
                     null, null, binding.annotationEditValue.text.toString())
-                setAnnotationVisibility(true)
             }
             else -> {
                 setAnnotationVisibility(false)
@@ -118,6 +142,9 @@ class EntryDetailsFragment : Fragment() {
             binding.annotationText.visibility = View.VISIBLE
             binding.annotationEditLayout.visibility = View.GONE
             binding.annotationButton.text = getString(R.string.entry_annotation_edit)
+
+            binding.annotationText.text = binding.annotationEditValue.text.toString()
+
         } else {
             binding.annotationText.visibility = View.GONE
             binding.annotationEditLayout.visibility = View.VISIBLE
@@ -183,15 +210,16 @@ class EntryDetailsFragment : Fragment() {
     }
     //endregion
 
-    private fun createOperationSnackBar(state: Int) {
+    private fun createOperationSnackBar(state: DetailsOpState) {
         val message =
             when (state) {
-                -1 -> getString(R.string.add_error)
-                1 -> getString(R.string.add_success)
+                DetailsOpState.SAVE_COMPLETED -> getString(R.string.add_success)
+                DetailsOpState.SAVE_ERROR -> getString(R.string.add_error)
 
-                -2 -> getString(R.string.update_error)
-                2 -> getString(R.string.update_success)
-                -3 -> getString(R.string.save_error)
+                DetailsOpState.UPDATE_COMPLETED -> getString(R.string.update_success)
+                DetailsOpState.UPDATE_ERROR -> getString(R.string.update_error)
+
+                DetailsOpState.IMPOSSIBLE_OPERATION -> getString(R.string.save_error)
                 else -> ""
             }
 

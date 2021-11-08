@@ -10,6 +10,12 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import java.util.*
 
+enum class FormOpState {
+    NONE,
+    ADD_COMPLETED,
+    ADD_FAIL,
+}
+
 class EntryFormViewModel: ViewModel() {
 
     private val service = EntryService()
@@ -17,10 +23,11 @@ class EntryFormViewModel: ViewModel() {
     private val _entry = MutableLiveData<Entry>()
     val entry: LiveData<Entry> = _entry
 
-    private var lastEntryId: String = ""
+    private val _lastEntryId = MutableLiveData<String>("")
+    val lastEntryId: LiveData<String> = _lastEntryId
 
-    private val _entryAdded = MutableLiveData<Int>()
-    val entryAdded = _entryAdded
+    private val _operationState = MutableLiveData<FormOpState>()
+    val operationState = _operationState
 
      fun createNewEntry(name: String, type: String, publication: String) {
         val data = hashMapOf(
@@ -37,28 +44,41 @@ class EntryFormViewModel: ViewModel() {
                     addedId.complete(service.addEntry(data))
 
                     addedId.await()
-                    lastEntryId = addedId.toString()
+                    _lastEntryId.value = addedId.toString()
 
-                    if (lastEntryId != "") {
-                        _entryAdded.value = 1
+                    if (_lastEntryId.value != "") {
+                        _operationState.value = FormOpState.ADD_COMPLETED
                     }
                     else {
-                        _entryAdded.value = -1
+                        _operationState.value = FormOpState.ADD_FAIL
                     }
                 } else {
-                    _entryAdded.value = -1
+                    _operationState.value = FormOpState.ADD_FAIL
                 }
             } catch (e: Exception) {
-                _entryAdded.value = -1
+                _operationState.value = FormOpState.ADD_FAIL
             }
         }
     }
 
-    fun undoNewEntry(): Boolean {
-        return false
-    }
+    /*fun undoNewEntry() {
+        viewModelScope.launch {
+            try {
+                val success = CompletableDeferred<Boolean?>()
+                success.complete(service.deleteEntry(_lastEntryId.value!!))
 
-    fun resetEntryAdded() {
-        _entryAdded.value = 0
+                if (success.await() == true) {
+                    _operationState.value = 2
+                } else {
+                    _operationState.value = -2
+                }
+            } catch (e: Exception) {
+                _operationState.value = -2
+            }
+        }
+    }*/
+
+    fun resetOperationState() {
+        _operationState.value = FormOpState.NONE
     }
 }

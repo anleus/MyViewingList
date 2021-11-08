@@ -35,8 +35,12 @@
     <string name="form_annotation">Anotaciones</string>
     <string name="form_add">Crear entrada</string>
     <string name="entry_created">Entrada añadida</string>
-    <string name="entry_fail">Fallo al crear nueva entrada</string>
-    <!--Error-->
+    <string name="entry_deleted">Entrada eliminada</string>
+    <string name="entry_create_fail">Fallo al crear nueva entrada</string>
+    <string name="entry_delete_fail">Fallo al crear nueva entrada</string>
+    <string name="entry_look">VER</string>
+    <string name="entry_undo">DESHACER</string>
+    <!--Form Error-->
     <string name="name_error">Introduzca un nombre</string>
     <string name="type_error">Selecciona un tipo</string>
     <string name="date_null_error">Selecciona una fecha</string>
