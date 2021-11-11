@@ -38,8 +38,7 @@
         android:label="Entry"
         tools:layout="@layout/fragment_entry">
         <argument
-            android:name="entryId"
-            app:argType="string"
-            app:nullable="true"/>
+            android:name="entryValues"
+            app:argType="string[]" />
     </fragment>
 </navigation>

@@ -63,8 +63,9 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
                 android:textSize="18sp"
-                tools:text="Type"
-                android:text="@{viewModel.entry.type}"/>
+                tools:text="Type" />
+            <!--falla por algun motivo
+            android:text="@{viewModel.entry.type.stringId}"-->
 
         </LinearLayout>
 

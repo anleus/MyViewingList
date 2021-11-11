@@ -10,6 +10,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.myviewinglist.R
 import com.example.myviewinglist.databinding.FragmentEntryBinding
+import com.example.myviewinglist.model.AddedEntryState
+import com.example.myviewinglist.model.Entry
+import com.example.myviewinglist.model.EntryType
 import com.example.myviewinglist.network.ServiceStatus
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.CalendarConstraints
@@ -24,18 +27,24 @@ class EntryDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentEntryBinding
     private val viewModel by lazy { ViewModelProvider(this).get(EntryDetailsViewModel::class.java)}
-    private lateinit var entryId: String
 
-    private lateinit var selectedState: String
+    private lateinit var selectedState: AddedEntryState
     private lateinit var completeDate: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            entryId = it.getString("entryId").toString()
-            viewModel.initializeDetailsPage(entryId)
+            val valuesList = it.getStringArray("entryValues")!!
+            val entry = Entry(
+                valuesList[0],
+                valuesList[1],
+                EntryType.values()[valuesList[2]!!.toInt()],
+                null,
+                valuesList[3])
 
-            selectedState = getString(R.string.waiting_name)
+            viewModel.initializeDetailsPage(entry)
+
+            selectedState = AddedEntryState.WAITING
         }
     }
 
@@ -48,16 +57,16 @@ class EntryDetailsFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        viewModel.requestStatus.observe(viewLifecycleOwner, Observer { value ->
-            setServiceStatusImage(value)
-        })
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         addedEntryObserver()
         operationStatusObserver()
+
+        viewModel.requestStatus.observe(viewLifecycleOwner, Observer { value ->
+            setServiceStatusImage(value)
+        })
 
         binding.stateButton.setOnClickListener {
             showStatePicker()
@@ -102,23 +111,23 @@ class EntryDetailsFragment : Fragment() {
         }
     }
 
-    private fun setCompleteDateVisibility(state: String?) {
+    private fun setCompleteDateVisibility(state: AddedEntryState?) {
         val completeDateLayout = binding.completeDateLayout
 
         when (state) {
-            getString(R.string.completed_name) -> completeDateLayout.visibility = View.VISIBLE
+            AddedEntryState.COMPLETED -> completeDateLayout.visibility = View.VISIBLE
             else -> completeDateLayout.visibility = View.GONE
         }
     }
 
-    private fun setStateButtonStyle(state: String?) {
+    private fun setStateButtonStyle(state: AddedEntryState?) {
         val stateButton = binding.stateButton
-
+        Log.d("debug","added entry status ${state?.name}")
         when (state) {
-            getString(R.string.completed_name) -> applyCompletedStyle(stateButton)
-            getString(R.string.viewing_name) -> applyViewingStyle(stateButton)
-            getString(R.string.waiting_name) -> applyWaitingStyle(stateButton)
-            getString(R.string.dropped_name) -> applyDroppedStyle(stateButton)
+            AddedEntryState.COMPLETED -> applyCompletedStyle(stateButton)
+            AddedEntryState.VIEWING -> applyViewingStyle(stateButton)
+            AddedEntryState.WAITING -> applyWaitingStyle(stateButton)
+            AddedEntryState.DROPPED -> applyDroppedStyle(stateButton)
             else -> { }
         }
     }
@@ -169,7 +178,7 @@ class EntryDetailsFragment : Fragment() {
             .setTitle(resources.getString(R.string.states_title))
             .setPositiveButton(resources.getString(R.string.ok)) { _, _ ->
                     when (selectedState) {
-                        getString(R.string.completed_name) -> {
+                        AddedEntryState.COMPLETED -> {
                             showDatePicker()
                         }
                         else -> {
@@ -179,9 +188,9 @@ class EntryDetailsFragment : Fragment() {
                         }
                     }
             }
-            .setSingleChoiceItems(resources.getStringArray(R.array.entry_state), 1)
+            .setSingleChoiceItems(resources.getStringArray(R.array.entry_state), -1)
             { _, which ->
-                selectedState = resources.getStringArray(R.array.entry_state)[which]
+                selectedState = AddedEntryState.values()[which]
             }
             .show()
     }

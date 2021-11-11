@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.myviewinglist.model.AddedEntry
+import com.example.myviewinglist.model.AddedEntryState
 import com.example.myviewinglist.model.Entry
+import com.example.myviewinglist.model.EntryType
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CompletableDeferred
 
@@ -31,8 +33,9 @@ class EntryService {
                     val publication = document.getString("publication")
                     val cover = document.getString("cover")
 
-                    val entry = Entry(document.id, name!!, type!!, cover, publication!!)
+                    val entry = Entry(document.id, name!!, EntryType.values()[type!!.toInt()], cover, publication!!)
                     entriesList.add(entry)
+                    Log.d("xxx", "entry-> ${entry.name}")
                 }
                 entriesList.sortBy { it.name }
                 mutableData.value = entriesList
@@ -54,7 +57,7 @@ class EntryService {
                 val publication = document.getString("publication")
                 val cover = document.getString("cover")
 
-                reqEntry.complete(Entry(document.id, name!!, type!!, cover, publication!!))
+                reqEntry.complete(Entry(document.id, name!!, EntryType.values()[type!!.toInt()], cover, publication!!))
             }
             .addOnFailureListener { exception ->
                 Log.d("Service", "Exception reading: $exception")
@@ -77,8 +80,7 @@ class EntryService {
                 val state = document.getString("state")
                 val completeDate = document.getString("completeDate")
                 val annotation = document.getString("annotation")
-
-                reqAddedEntry.complete(AddedEntry(entryId, state, completeDate, annotation))
+                reqAddedEntry.complete(AddedEntry(entryId, AddedEntryState.values()[state!!.toInt()], completeDate, annotation))
             }
             .addOnFailureListener { exception ->
                 Log.d("Service", "Exception reading: $exception")
@@ -100,6 +102,7 @@ class EntryService {
                 .addOnFailureListener { e ->
                     Log.w("Escritura", "Error: $e")
                 }
+
         return entryId
     }
 
@@ -150,20 +153,20 @@ class EntryService {
     }
 
     suspend fun checkAddedEntryExists(entryId: String) : Boolean? {
+        val addedEntriesRef = db.collection("users").document(testUserId)
+            .collection("added_entries")
+        val query = addedEntriesRef.whereEqualTo("__name__", entryId)
+
         val addedEntryExist = CompletableDeferred<Boolean?>()
 
-        db.collection("users").document(testUserId)
-            .collection("added_entries")
-            .get()
+        query.get()
             .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    if (document.id == entryId) {
-                        addedEntryExist.complete(true)
-                    } else {
-                        addedEntryExist.complete(false)
-                    }
-                }
+                addedEntryExist.complete(!documents.isEmpty)
             }
+            .addOnFailureListener {
+                addedEntryExist.complete(false)
+            }
+
         return addedEntryExist.await()
     }
 

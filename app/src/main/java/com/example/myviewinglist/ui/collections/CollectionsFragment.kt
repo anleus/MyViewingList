@@ -1,5 +1,6 @@
 package com.example.myviewinglist.ui.collections
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myviewinglist.databinding.FragmentCollectionsBinding
+import com.example.myviewinglist.model.Entry
 import com.example.myviewinglist.ui.EntryListAdapter
 
 class CollectionsFragment : Fragment(), EntryListAdapter.OnItemClickListener {
@@ -37,6 +39,7 @@ class CollectionsFragment : Fragment(), EntryListAdapter.OnItemClickListener {
         observeData()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun observeData() {
         viewModel.entries.observe(viewLifecycleOwner, Observer {
             adapter.setListData(it)
@@ -47,7 +50,11 @@ class CollectionsFragment : Fragment(), EntryListAdapter.OnItemClickListener {
     override fun onItemClick(position: Int) {
         val item = viewModel.entries.value?.get(position)
 
-        val action = CollectionsFragmentDirections.actionCollectionsFragmentToEntryFragment(item?.id)
+        val action = CollectionsFragmentDirections.actionCollectionsFragmentToEntryFragment(entryToList(item))
         view?.findNavController()?.navigate(action)
+    }
+
+    private fun entryToList(entry: Entry?): Array<String?> {
+        return arrayOf(entry?.id, entry?.name, entry?.type?.ordinal.toString(), entry?.publication)
     }
 }

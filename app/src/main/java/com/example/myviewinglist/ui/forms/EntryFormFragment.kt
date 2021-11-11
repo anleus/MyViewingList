@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -18,6 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.example.myviewinglist.R
 import com.example.myviewinglist.databinding.FragmentEntryFormBinding
+import com.example.myviewinglist.model.EntryType
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import java.time.Instant
@@ -40,8 +40,6 @@ class EntryFormFragment : Fragment() {
                 .setInputMode(MaterialDatePicker.INPUT_MODE_TEXT)
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .build()
-
-    private var canAdd: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,10 +66,13 @@ class EntryFormFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //Dropdown tipo de Entry
-        val adapter =
-            ArrayAdapter.createFromResource(
+        val types = resources.getStringArray(R.array.entry_type)
+        val arrayAdapter = ArrayAdapter(requireContext(), R.layout.basic_list_item, types)
+        binding.entryTypeValue.setAdapter(arrayAdapter)
+
+        /*val adapter = ArrayAdapter.createFromResource(
                 requireContext(), R.array.entry_type, R.layout.basic_list_item)
-        (binding.entryType.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+        (binding.entryType.editText as? AutoCompleteTextView)?.setAdapter(adapter)*/
 
         //Date picker
         binding.publicationDateValue.setOnClickListener {
@@ -158,12 +159,26 @@ class EntryFormFragment : Fragment() {
         }
 
         if (canAdd) {
-            Log.d("Dbug", "Datos enviados al view model")
-            viewModel.createNewEntry(name, type, publicationDate)
+            viewModel.createNewEntry(name, convertStringToEnum(type), publicationDate)
         }
         else {
             Log.d("Dbug", "No se pueden enviar los datos")
         }
+    }
+
+    private fun convertStringToEnum(type: String) : EntryType {
+        var newType: EntryType = EntryType.VIDEOGAME
+
+        when (type) {
+            getString(R.string.videogame_name) -> newType = EntryType.VIDEOGAME
+            getString(R.string.anime_name) -> newType = EntryType.ANIME
+            getString(R.string.manga_name) -> newType = EntryType.MANGA
+            getString(R.string.film_name) -> newType = EntryType.FILM
+            getString(R.string.serie_name) -> newType = EntryType.SERIE
+            getString(R.string.book_name) -> newType = EntryType.BOOK
+        }
+
+        return newType
     }
 
     private fun clearFormFields() {
@@ -174,8 +189,14 @@ class EntryFormFragment : Fragment() {
 
     private fun openEntry() {
         val action = EntryFormFragmentDirections.
-            actionEntryFormFragmentToEntryFragment(viewModel.lastEntryId.value)
+            actionEntryFormFragmentToEntryFragment(entryToList())
 
         view?.findNavController()?.navigate(action)
+    }
+
+    private fun entryToList(): Array<String?> {
+        val entry = viewModel.lastEntry.value!!
+
+        return arrayOf(entry.id, entry.name, entry.type?.ordinal.toString(), entry.publication)
     }
 }

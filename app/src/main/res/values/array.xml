@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>]
-    <string-array name="entry_type">
+    <array name="entry_type">
         <item>@string/videogame_name</item>
         <item>@string/anime_name</item>
         <item>@string/manga_name</item>
         <item>@string/film_name</item>
         <item>@string/serie_name</item>
         <item>@string/book_name</item>
-    </string-array>
+    </array>
 
-    <string-array name="entry_state">
+    <array name="entry_types_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </array>
+
+    <array name="entry_state">
         <item>@string/completed_name</item>
         <item>@string/viewing_name</item>
         <item>@string/waiting_name</item>
         <item>@string/dropped_name</item>
-    </string-array>
+    </array>
 </resources>

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myviewinglist.model.Entry
+import com.example.myviewinglist.model.EntryType
 import com.example.myviewinglist.network.EntryService
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
@@ -20,20 +21,20 @@ class EntryFormViewModel: ViewModel() {
 
     private val service = EntryService()
 
-    private val _entry = MutableLiveData<Entry>()
-    val entry: LiveData<Entry> = _entry
+    private val _lastEntry = MutableLiveData<Entry>()
+    val lastEntry: LiveData<Entry> = _lastEntry
 
-    private val _lastEntryId = MutableLiveData<String>("")
-    val lastEntryId: LiveData<String> = _lastEntryId
+    private val lastEntryId = MutableLiveData<String>("")
+
 
     private val _operationState = MutableLiveData<FormOpState>()
     val operationState = _operationState
 
-     fun createNewEntry(name: String, type: String, publication: String) {
+     fun createNewEntry(name: String, type: EntryType, publication: String) {
         val data = hashMapOf(
             "lc_name" to name.toLowerCase(Locale.getDefault()),
             "name" to name,
-            "type" to  type,
+            "type" to  type.ordinal.toString(),
             "publication" to publication)
 
         viewModelScope.launch {
@@ -44,10 +45,11 @@ class EntryFormViewModel: ViewModel() {
                     addedId.complete(service.addEntry(data))
 
                     addedId.await()
-                    _lastEntryId.value = addedId.toString()
+                    lastEntryId.value = addedId.toString()
 
-                    if (_lastEntryId.value != "") {
+                    if (lastEntryId.value != "") {
                         _operationState.value = FormOpState.ADD_COMPLETED
+                        _lastEntry.value = Entry(lastEntryId.value, name, type, null, publication)
                     }
                     else {
                         _operationState.value = FormOpState.ADD_FAIL

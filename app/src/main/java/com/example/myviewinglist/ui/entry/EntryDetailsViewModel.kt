@@ -1,15 +1,16 @@
 package com.example.myviewinglist.ui.entry
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myviewinglist.model.AddedEntry
+import com.example.myviewinglist.model.AddedEntryState
 import com.example.myviewinglist.model.Entry
 import com.example.myviewinglist.network.EntryService
 import com.example.myviewinglist.network.ServiceStatus
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 enum class DetailsOpState {
@@ -58,19 +59,23 @@ class EntryDetailsViewModel : ViewModel() {
         var success = false
 
         try {
+            Log.d("debug", "added entry esite")
+
             val reqAddedEntry = CompletableDeferred<AddedEntry?>()
             reqAddedEntry.complete(service.getUserAddedEntry(entryId))
 
             _addedEntry.value = reqAddedEntry.await()
 
-            if (addedEntry.value != null) success = true
+            if (addedEntry.value != null) {
+                success = true
+            }
         } catch (e: Exception) {
             return false
         }
         return success
     }
 
-    fun updateAddedEntry(state: String? = null,  completeDate: String? = null, annotation: String? = null) {
+    fun updateAddedEntry(state: AddedEntryState? = null,  completeDate: String? = null, annotation: String? = null) {
         val data = hashMapOf<String, String>()
         var isNewAddedEntry = false
 
@@ -81,7 +86,7 @@ class EntryDetailsViewModel : ViewModel() {
 
         if (state != null) {
             _addedEntry.value?.state = state
-            data["state"] = state
+            data["state"] = state.ordinal.toString()
         }
         if (completeDate != null) {
             _addedEntry.value?.completeDate = completeDate
@@ -130,17 +135,24 @@ class EntryDetailsViewModel : ViewModel() {
         _operationStatus.value = DetailsOpState.NONE
     }
 
+     fun initializeDetailsPage(item: Entry) {
+         _entry.value = item
 
-     fun initializeDetailsPage(id: String) {
         viewModelScope.launch {
             _requestStatus.value = ServiceStatus.LOADING
             try {
-                val entryLoaded = async { getEntry(id) }
-                val addedEntryLoaded = async { getAddedEntry(id) }
+                if (service.checkAddedEntryExists(item.id!!)!!) {
+                    val addedEntryLoaded = CompletableDeferred<Boolean?>()
 
-                if (entryLoaded.await() && addedEntryLoaded.await()) {
+                     addedEntryLoaded.complete(getAddedEntry(item.id))
+
+                    if (addedEntryLoaded.await()!!) {
+                        _requestStatus.value = ServiceStatus.DONE
+                    }
+                } else {
                     _requestStatus.value = ServiceStatus.DONE
                 }
+
             } catch (e: Exception) {
                 _requestStatus.value = ServiceStatus.ERROR
                 //hacer que refresque o decir que no hay conexion a internet
