@@ -26,7 +26,7 @@ import java.util.*
 class EntryDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentEntryBinding
-    private val viewModel by lazy { ViewModelProvider(this).get(EntryDetailsViewModel::class.java)}
+    private val viewModel by lazy { ViewModelProvider(this)[EntryDetailsViewModel::class.java] }
 
     private lateinit var selectedState: AddedEntryState
     private lateinit var completeDate: String
@@ -99,11 +99,9 @@ class EntryDetailsFragment : Fragment() {
             ServiceStatus.LOADING -> {
                 Log.d("Service", "Service in loading status")
                 statusImg.visibility = View.VISIBLE
-                statusImg.setImageResource(R.drawable.loading_animation)
             }
             ServiceStatus.ERROR -> {
                 statusImg.visibility = View.VISIBLE
-                statusImg.setImageResource(R.drawable.ic_connection_error)
             }
             ServiceStatus.DONE -> {
                 statusImg.visibility = View.GONE

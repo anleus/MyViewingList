@@ -24,17 +24,16 @@ class CollectionsViewModel : ViewModel() {
         getAllEntries()
     }
 
-     private fun getAllEntries() {
-
+    private fun getAllEntries() {
          viewModelScope.launch {
              try {
-                 service.getAllEntries().observeForever {
-                     _entries.value = it
+                 service.getEntries().observeForever {
+                     _entries.value = it //-> en teoria concatena
                  }
+
              } catch (e: Exception) {
                  _entries.value = mutableListOf<Entry>()
              }
          }
-        //Falta lo de loading y demas
     }
 }

@@ -105,19 +105,6 @@ class EntryFormFragment : Fragment() {
         val objLayoutParams = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
         val snackbar = Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
 
-        /*Prueba de snackbar con dos botones -> no va, de momento
-        val snackbar = Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
-            .setAnchorView(R.id.nav_view)
-
-        if (creation) {
-            snackbar.setAction(R.string.entry_look) {
-                    openEntry()
-                }
-                .setAction(R.string.entry_undo) {
-                    viewModel.undoNewEntry()
-                }
-        }*/
-
         if (added) {
             snackbar.setAction(R.string.entry_look) {
                 openEntry()

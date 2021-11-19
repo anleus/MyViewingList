@@ -20,11 +20,13 @@ class EntryService {
     private val testUserId: String = "PyhdAWstL5Ck8BVaCKNm"
 
     //add pagination
-     fun getAllEntries() : LiveData<MutableList<Entry>> {
+     fun getEntries() : LiveData<MutableList<Entry>> {
         val mutableData = MutableLiveData<MutableList<Entry>>()
         val entriesList = mutableListOf<Entry>()
 
         db.collection("entries")
+            .limit(20)
+            .orderBy("name")
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
@@ -35,9 +37,10 @@ class EntryService {
 
                     val entry = Entry(document.id, name!!, EntryType.values()[type!!.toInt()], cover, publication!!)
                     entriesList.add(entry)
-                    Log.d("xxx", "entry-> ${entry.name}")
                 }
-                entriesList.sortBy { it.name }
+
+                Log.d("xxx", "${entriesList.size}")
+                //entriesList.sortBy { it.name }
                 mutableData.value = entriesList
             }
             .addOnFailureListener { exception ->

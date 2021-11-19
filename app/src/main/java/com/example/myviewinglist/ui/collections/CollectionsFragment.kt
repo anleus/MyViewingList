@@ -16,14 +16,16 @@ import com.example.myviewinglist.ui.EntryListAdapter
 
 class CollectionsFragment : Fragment(), EntryListAdapter.OnItemClickListener {
 
-    private val viewModel by lazy { ViewModelProvider(this).get(CollectionsViewModel::class.java)}
+    private lateinit var binding: FragmentCollectionsBinding
+
+    private val viewModel by lazy { ViewModelProvider(this)[CollectionsViewModel::class.java] }
     private lateinit var adapter: EntryListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = FragmentCollectionsBinding.inflate(inflater)
+        binding = FragmentCollectionsBinding.inflate(inflater)
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel

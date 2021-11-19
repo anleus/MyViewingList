@@ -1,6 +1,5 @@
 package com.example.myviewinglist.ui.entry
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -38,29 +37,10 @@ class EntryDetailsViewModel : ViewModel() {
     private val _requestStatus = MutableLiveData<ServiceStatus>()
     val requestStatus = _requestStatus
 
-    private suspend fun getEntry(entryId: String): Boolean {
-        var success = false
-
-        try {
-            val reqEntry = CompletableDeferred<Entry?>()
-            reqEntry.complete(service.getEntryById(entryId))
-
-            _entry.value = reqEntry.await()
-
-            if (entry.value != null) success = true
-
-        } catch (e: Exception) {
-            return false
-        }
-        return success
-    }
-
     private suspend  fun getAddedEntry(entryId: String): Boolean{
         var success = false
 
         try {
-            Log.d("debug", "added entry esite")
-
             val reqAddedEntry = CompletableDeferred<AddedEntry?>()
             reqAddedEntry.complete(service.getUserAddedEntry(entryId))
 
